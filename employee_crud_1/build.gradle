@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+
+mainClassName = 'employee_crud_1.Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation     'junit:junit:4.13'
+    implementation fileTree(dir:'lib', include:'mysql-connector-java-8.0.28.jar');
+    implementation fileTree(dir:'lib', include:'hibernate-jpa-2.0-api-1.0.1.Final.jar');
+
+    implementation fileTree(dir:'lib/spring-boot', include:'spring-boot-gradle-plugin-2.5.2.jar');
+    implementation fileTree(dir:'lib/spring-boot', include:'spring-core-5.3.8.jar');
+
+    implementation fileTree(dir:'lib/new-spring-boot/updated', include:'gears-app-base-0.39.jar');
+
+    implementation fileTree(dir:'lib/new-spring', include:'org.springframework.web-3.0.6.release.jar');
+
+    implementation fileTree(dir:'lib/new-spring-2', include:'spring-web-5.3.21.jar');
+
+    implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.7.1';
+    
+}

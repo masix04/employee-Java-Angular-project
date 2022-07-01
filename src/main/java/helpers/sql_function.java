@@ -5,6 +5,7 @@
  */
 package helpers;
 
+import config.db_config;
 import java.util.HashMap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,6 +42,9 @@ public class sql_function {
     }
     
     public Object basic_select_to_db(String query, Connection conn) throws SQLException {
+        
+//        db_config config_object = new db_config();
+//        config_object.db_config();
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);

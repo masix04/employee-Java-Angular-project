@@ -7,17 +7,25 @@ package employee_crud_1;
 
 // 1st Step
 import com.sun.net.httpserver.HttpServer;
+import config.db_config;
+import helpers.sql_function;
 
 import java.net.InetSocketAddress;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
@@ -37,10 +45,9 @@ public class Main {
      * @throws java.io.IOException
      */
     static String APIURL = "/api/";
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
 
         int serverPort = 8080;
-        
         
         // Create Router Class
 //        Routes apiRoutes = new Routes();
@@ -81,15 +88,25 @@ public class Main {
         httpServer.start();
     }
       
-    public static void send1stAPIRequest(HttpServer httpServer) {
+    public static void send1stAPIRequest(HttpServer httpServer) throws SQLException {
        System.out.println("1st API Request Started.");
 
+       sql_function DB = new sql_function();
          // 1st API to get Just message 
         httpServer.createContext(Main.APIURL + "employees", (exchange -> {
             
             try (exchange) {
                 if("GET".equals(exchange.getRequestMethod())) {
                     
+                    db_config config_object = new db_config();
+                    config_object.db_config();
+                    
+                    String query = "Select * from employees";
+                    ResultSet rs = (ResultSet) DB.basic_select_to_db(query, config_object.getConnection());
+                    
+                    DisplaySelectedData(rs);
+//                    Map<String, String> DATA = FormatSelectedData(rs);
+//                    System.out.println(DATA);
                     String responseText = "Success Getting Employees";
 
                     // Success Message
@@ -103,7 +120,9 @@ public class Main {
                     // Failed Message
                     exchange.sendResponseHeaders(405, -1);
                 }
-            }
+            } catch (SQLException ex) {
+               Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+           }
             exchange.close();
         }));
     }
@@ -232,4 +251,43 @@ public class Main {
         System.out.println(subPath);
         return "Not stable in Getting Accurate Path";
     }
+    
+    // Formatted and Display ResultSet Selected Data   After Select Query Ran AND Brings ResultSet
+    public static void DisplaySelectedData(ResultSet rs) throws SQLException {
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        
+        int columnsCount = rsmd.getColumnCount();
+        System.out.println();
+        while(rs.next()) {
+           for (int i = 1; i <= columnsCount; i++) {
+                if (i > 1) System.out.print(",  ");
+                String columnValue = rs.getString(i);
+                System.out.print(" | "+rsmd.getColumnName(i)+ " => " +columnValue);
+            }
+           System.out.println("");
+        }
+        System.out.println();
+    } 
+    
+    // Formatted and Display ResultSet Selected Data   After Select Query Ran AND Brings ResultSet
+    public static Map<String, String> FormatSelectedData(ResultSet rs) throws SQLException {
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        Map<String, String> formattedData = null;
+        
+        int columnsCount = rsmd.getColumnCount();
+//        System.out.println();
+        while(rs.next()) {
+           for (int i = 1; i <= columnsCount; i++) {
+//                if (i > 1) System.out.print(",  ");
+                String columnValue = rs.getString(i);
+                formattedData.put(rsmd.getColumnName(i), columnValue);
+//                System.out.print(" | "+rsmd.getColumnName(i)+ " => " +columnValue);
+            }
+//           System.out.println("");
+        }
+//        System.out.println();
+        return formattedData;
+    } 
 }

@@ -1,0 +1,63 @@
+
+// This will give you response
+     COMMAND  1    ---        curl localhost:8080/api/employees
+     COMMAND  1 B    ---        curl -X GET localhost:8080/api/employees
+
+IF Success => Response will get
+ELSE False => <h1>404 Not Found</h1>No context found for request
+_______________________________________________________________________
+// This will give you details about your Request and Https HEADERS
+     COMMAND   2       -----      curl -v localhost:8080/api/employees
+     COMMAND   2  B   -----      curl -v -X GET localhost:8080/api/employees	
+
+IF Success =>
+
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> GET /api/employees HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.55.1
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Date: Fri, 01 Jul 2022 07:10:59 GMT
+< Content-length: 25
+<
+Success Getting Employees* Connection #0 to host localhost left intact
+----------------------------------------------------------
+ELSE Failed  => 
+
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> GET /api/employee HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.55.1
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Length: 50
+< Content-Type: text/html
+<
+<h1>404 Not Found</h1>No context found for request* Connection #0 to host localhost left intact
+--------------------------------------------------------------
+	
+// This will give you details about your Request and Https HEADERS                      [  Wrong HEADER  ]
+     COMMAND   3  B   -----      curl -v -X POST localhost:8080/api/employees
+
+FAILED
+
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> POST /api/employees HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.55.1
+> Accept: */*
+>
+< HTTP/1.1 405 Method Not Allowed
+< Date: Fri, 01 Jul 2022 07:12:11 GMT
+< Content-length: 0
+<
+* Connection #0 to host localhost left intact
